@@ -5,10 +5,12 @@
 
 class Buffer {
 public:
-    // constructors and destructors
-    Buffer(const Buffer& buffer) : data(buffer.getData()) {generate();};
-    Buffer(const std::vector<Vertex>& data) : data(data) {generate();};
-    Buffer() : data(0) {generate();}; ~Buffer();
+    // constructors
+    Buffer(const Buffer& buffer) : data(buffer.getData()) {generate();}
+    Buffer(const std::vector<Vertex>& data) : data(data) {generate();}
+
+    // empty constructor and destructor
+    Buffer() : data(0) {generate();} ~Buffer();
 
     // operators
     Buffer& operator=(const Buffer& buffer);
