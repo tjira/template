@@ -15,10 +15,6 @@ Buffer& Buffer::operator=(const Buffer& buffer) {
     return *this;
 }
 
-void Buffer::bind() const {
-    glBindVertexArray(vao);
-}
-
 void Buffer::generate() {
     // generate and bind buffers
     glGenVertexArrays(1, &vao), glGenBuffers(1, &vbo), glBindBuffer(GL_ARRAY_BUFFER, vbo), glBindVertexArray(vao);

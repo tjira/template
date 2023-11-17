@@ -1,7 +1,7 @@
 #include "mesh.h"
 
 Mesh Mesh::Icosphere(int subdivisions, bool smooth, const std::string& name) {
-    // create the data vector and the icosphere constantt
+    // create the data vector and the icosphere constant
     std::vector<Vertex> data; float k = (1.0f + sqrtf(5.0f)) / 2.0f;
 
     // triangle #1
@@ -106,11 +106,13 @@ Mesh Mesh::Icosphere(int subdivisions, bool smooth, const std::string& name) {
 
     // subdivide the icosphere
     for (int i = 0; i < subdivisions; i++) {
+
         // create the container for the subdivided shape
         std::vector<Vertex> subdivided;
 
         // for every face in the data containner
         for (size_t j = 0; j < data.size(); j += 3) {
+
             // the end vertices
             glm::vec3 p1 = data.at(j + 0).position;
             glm::vec3 p2 = data.at(j + 1).position;
@@ -146,8 +148,10 @@ Mesh Mesh::Icosphere(int subdivisions, bool smooth, const std::string& name) {
         data = subdivided;
     }
 
+    // assign normals
     for (size_t i = 0; i < data.size(); i += 3) {
-        // get two vectors from the same place
+
+        // get two vectors from the same plane
         glm::vec3 v1 = data.at(i + 1).position - data.at(i).position;
         glm::vec3 v2 = data.at(i + 2).position - data.at(i).position;
 
@@ -161,25 +165,21 @@ Mesh Mesh::Icosphere(int subdivisions, bool smooth, const std::string& name) {
     return Mesh(data, name);
 }
 
-std::string Mesh::getName() const {
-    return name;
-}
-
-glm::vec3 Mesh::getPosition() const {
-    return glm::vec3(model[3]);
-}
-
 void Mesh::render(const Shader& shader, const glm::mat4& transform) const {
+    // use the shader and set the model matrix
     shader.use(), shader.set<glm::mat4>("u_model", transform * model);
+
+    // bind the buffer and draw the vertices
     buffer.bind(), glDrawArrays(GL_TRIANGLES, 0, (int)buffer.getSize());
 }
 
 void Mesh::setColor(const glm::vec3& color) {
+    // extract the data from the mesh buffer
     std::vector<Vertex> data = buffer.getData();
-    std::for_each(data.begin(), data.end(), [color](Vertex& v) { v.color = color; });
-    buffer = Buffer(data);
-}
 
-void Mesh::setModel(const glm::mat4& model) {
-    this->model = model;
+    // change the color of each vertex
+    std::for_each(data.begin(), data.end(), [color](Vertex& v) {v.color = color;});
+
+    // create a new buffer
+    buffer = Buffer(data);
 }

@@ -12,6 +12,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# set compiler flags
+set(CMAKE_CXX_FLAGS_DEBUG "-g -pg -Og -fprofile-arcs -ftest-coverage -Wall -Wextra")
+set(CMAKE_CXX_FLAGS_RELEASE "-s -mavx -O2")
+
 # set glfw cmake flags
 set(GLFW_BUILD_EXAMPLES OFF)
 set(GLFW_BUILD_TESTS OFF)
@@ -57,7 +61,7 @@ add_library(imgui ${IMBACKEND} ${IMDIALOG} ${IMGUI})
 target_link_libraries(imgui glad glfw)
 
 # add template-opengl executable
-add_executable(template-opengl src/buffer.cpp src/gui.cpp src/main.cpp src/mesh.cpp src/parser.cpp src/shader.cpp)
+add_executable(template-opengl src/buffer.cpp src/callback.cpp src/gui.cpp src/main.cpp src/mesh.cpp src/parser.cpp src/shader.cpp)
 target_link_libraries(template-opengl argparse imgui glm::glm)
 
 # link OpenMP on build type

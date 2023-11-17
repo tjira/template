@@ -4,21 +4,27 @@
 #include <stb_image_write.h>
 
 Gui::Gui(GLFWwindow* window) : window(window) {
+    // create the context
     ImGui::CreateContext();
-    ImGui_ImplOpenGL3_Init("#version 420");
-    ImGui_ImplGlfw_InitForOpenGL(this->window, true);
+
+    // initialize OpenGL and GLFW
+    ImGui_ImplOpenGL3_Init("#version 420"), ImGui_ImplGlfw_InitForOpenGL(this->window, true);
+
+    // disable GUI state file generation
     ImGui::GetIO().IniFilename = nullptr;
 }
 
 Gui::~Gui() {
-    ImGui_ImplGlfw_Shutdown();
-    ImGui_ImplOpenGL3_Shutdown();
+    // destruct GLFW and OpenGL
+    ImGui_ImplGlfw_Shutdown(), ImGui_ImplOpenGL3_Shutdown();
+
+    // destruct GUI context
     ImGui::DestroyContext();
 }
 
 void Gui::render() {
     // get the GLFW pointer
-    GLFWPointer* pointer = (GLFWPointer*)glfwGetWindowUserPointer(window);
+    Pointer* pointer = (Pointer*)glfwGetWindowUserPointer(window);
 
     // begin frame
     ImGui_ImplOpenGL3_NewFrame();
@@ -86,15 +92,10 @@ void Gui::render() {
             }
 
             // save the buffer
-            if (extension == "png") {
-                stbi_write_png(path.c_str(), width, height, 4, pixels, 4 * width);
-            } else if (extension == "jpg") {
-                stbi_write_jpg(path.c_str(), width, height, 4, pixels, 80);
-            } else if (extension == "bmp") {
-                stbi_write_bmp(path.c_str(), width, height, 4, pixels);
-            } else {
-                throw std::runtime_error("Unknown file extension.");
-            }
+            if (extension == "png") stbi_write_png(path.c_str(), width, height, 4, pixels, 4 * width);
+            else if (extension == "jpg") stbi_write_jpg(path.c_str(), width, height, 4, pixels, 80);
+            else if (extension == "bmp") stbi_write_bmp(path.c_str(), width, height, 4, pixels);
+            else throw std::runtime_error("Unknown file extension.");
         }
 
         // close the instance

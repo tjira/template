@@ -1,7 +1,6 @@
 #pragma once
 
 #include "opengl.h"
-#include "vertex.h"
 
 class Buffer {
 public:
@@ -20,7 +19,7 @@ public:
     size_t getSize() const {return data.size();};
 
     // state functions
-    void bind() const;
+    void bind() const {glBindVertexArray(vao);}
 
 private:
     std::vector<Vertex> data;

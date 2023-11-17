@@ -1,9 +1,13 @@
 #pragma once
 
-#include <ImGuiFileDialog.h>
+#include "opengl.h"
+
+// OpenGL and GLFW backends
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_glfw.h>
-#include "glfwpointer.h"
+
+// OpenGL file dialog
+#include <ImGuiFileDialog.h>
 
 class Gui {
 public:
