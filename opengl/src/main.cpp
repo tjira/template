@@ -103,7 +103,9 @@ int main(int argc, char** argv) {
 
     {
         // initialize meshes, shaders and GUIs
-        auto mesh = Mesh::Icosphere(3, false); 
+        // auto mesh = Mesh::Icosphere(3, false); 
+        auto mesh = Mesh::Cube(); 
+
         Shader shader(vertex, fragment);
         Gui gui(pointer.window);
 

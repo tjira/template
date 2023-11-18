@@ -1,5 +1,51 @@
 #include "mesh.h"
 
+Mesh Mesh::Cube(const std::string& name) {
+    // create the data vector
+    std::vector<Vertex> data;
+
+    // fill the data
+    data.push_back({glm::normalize(glm::vec3{ 0.5f, -0.5f, -0.5f}), glm::vec3{ 0.0f,  0.0f, -1.0f}});
+    data.push_back({glm::normalize(glm::vec3{-0.5f, -0.5f, -0.5f}), glm::vec3{ 0.0f,  0.0f, -1.0f}});
+    data.push_back({glm::normalize(glm::vec3{ 0.5f,  0.5f, -0.5f}), glm::vec3{ 0.0f,  0.0f, -1.0f}});
+    data.push_back({glm::normalize(glm::vec3{ 0.5f,  0.5f, -0.5f}), glm::vec3{ 0.0f,  0.0f, -1.0f}});
+    data.push_back({glm::normalize(glm::vec3{-0.5f, -0.5f, -0.5f}), glm::vec3{ 0.0f,  0.0f, -1.0f}});
+    data.push_back({glm::normalize(glm::vec3{-0.5f,  0.5f, -0.5f}), glm::vec3{ 0.0f,  0.0f, -1.0f}});
+    data.push_back({glm::normalize(glm::vec3{-0.5f, -0.5f,  0.5f}), glm::vec3{ 0.0f,  0.0f,  1.0f}});
+    data.push_back({glm::normalize(glm::vec3{ 0.5f, -0.5f,  0.5f}), glm::vec3{ 0.0f,  0.0f,  1.0f}});
+    data.push_back({glm::normalize(glm::vec3{ 0.5f,  0.5f,  0.5f}), glm::vec3{ 0.0f,  0.0f,  1.0f}});
+    data.push_back({glm::normalize(glm::vec3{ 0.5f,  0.5f,  0.5f}), glm::vec3{ 0.0f,  0.0f,  1.0f}});
+    data.push_back({glm::normalize(glm::vec3{-0.5f,  0.5f,  0.5f}), glm::vec3{ 0.0f,  0.0f,  1.0f}});
+    data.push_back({glm::normalize(glm::vec3{-0.5f, -0.5f,  0.5f}), glm::vec3{ 0.0f,  0.0f,  1.0f}});
+    data.push_back({glm::normalize(glm::vec3{-0.5f,  0.5f,  0.5f}), glm::vec3{-1.0f,  0.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{-0.5f,  0.5f, -0.5f}), glm::vec3{-1.0f,  0.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{-0.5f, -0.5f, -0.5f}), glm::vec3{-1.0f,  0.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{-0.5f, -0.5f, -0.5f}), glm::vec3{-1.0f,  0.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{-0.5f, -0.5f,  0.5f}), glm::vec3{-1.0f,  0.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{-0.5f,  0.5f,  0.5f}), glm::vec3{-1.0f,  0.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{ 0.5f,  0.5f, -0.5f}), glm::vec3{ 1.0f,  0.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{ 0.5f,  0.5f,  0.5f}), glm::vec3{ 1.0f,  0.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{ 0.5f, -0.5f, -0.5f}), glm::vec3{ 1.0f,  0.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{ 0.5f, -0.5f, -0.5f}), glm::vec3{ 1.0f,  0.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{ 0.5f,  0.5f,  0.5f}), glm::vec3{ 1.0f,  0.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{ 0.5f, -0.5f,  0.5f}), glm::vec3{ 1.0f,  0.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{-0.5f, -0.5f, -0.5f}), glm::vec3{ 0.0f, -1.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{ 0.5f, -0.5f, -0.5f}), glm::vec3{ 0.0f, -1.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{ 0.5f, -0.5f,  0.5f}), glm::vec3{ 0.0f, -1.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{ 0.5f, -0.5f,  0.5f}), glm::vec3{ 0.0f, -1.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{-0.5f, -0.5f,  0.5f}), glm::vec3{ 0.0f, -1.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{-0.5f, -0.5f, -0.5f}), glm::vec3{ 0.0f, -1.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{ 0.5f,  0.5f, -0.5f}), glm::vec3{ 0.0f,  1.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{-0.5f,  0.5f, -0.5f}), glm::vec3{ 0.0f,  1.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{ 0.5f,  0.5f,  0.5f}), glm::vec3{ 0.0f,  1.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{-0.5f,  0.5f,  0.5f}), glm::vec3{ 0.0f,  1.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{ 0.5f,  0.5f,  0.5f}), glm::vec3{ 0.0f,  1.0f,  0.0f}});
+    data.push_back({glm::normalize(glm::vec3{-0.5f,  0.5f, -0.5f}), glm::vec3{ 0.0f,  1.0f,  0.0f}});
+
+    // return the mesh
+    return Mesh(data, name);
+}
+
 Mesh Mesh::Icosphere(int subdivisions, bool smooth, const std::string& name) {
     // create the data vector and the icosphere constant
     std::vector<Vertex> data; float k = (1.0f + sqrtf(5.0f)) / 2.0f;
