@@ -4,17 +4,6 @@ Buffer::~Buffer() {
     glDeleteVertexArrays(1, &vao), glDeleteBuffers(1, &vbo);
 };
 
-Buffer& Buffer::operator=(const Buffer& buffer) {
-    // delete the current buffers
-    glDeleteVertexArrays(1, &vao), glDeleteBuffers(1, &vbo);
-
-    // assign data to this buffer and generate
-    this->data = buffer.data, generate();
-
-    // return new buffer
-    return *this;
-}
-
 void Buffer::generate() {
     // generate and bind buffers
     glGenVertexArrays(1, &vao), glGenBuffers(1, &vbo), glBindBuffer(GL_ARRAY_BUFFER, vbo), glBindVertexArray(vao);

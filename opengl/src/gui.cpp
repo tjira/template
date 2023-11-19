@@ -22,7 +22,7 @@ Gui::~Gui() {
     ImGui::DestroyContext();
 }
 
-void Gui::render() {
+void Gui::render(Scene& scene) {
     // get the GLFW pointer
     Pointer* pointer = (Pointer*)glfwGetWindowUserPointer(window);
 
@@ -42,6 +42,62 @@ void Gui::render() {
         ImGui::SliderFloat("Diffuse", &pointer->light.diffuse, 0, 1);
         ImGui::SliderFloat("Specular", &pointer->light.specular, 0, 1);
         ImGui::SliderFloat("Shininess", &pointer->light.shininess, 1, 128);
+
+        // end the window
+        ImGui::End();
+    }
+
+    // objects window
+    if (pointer->flags.objects) {
+
+        // begin the window
+        ImGui::Begin("Objects", &pointer->flags.options, ImGuiWindowFlags_AlwaysAutoResize);
+
+        // begin the table
+        if (ImGui::BeginTable("##split", 2, ImGuiTableFlags_BordersOuter | ImGuiTableFlags_ScrollY)) {
+
+            // setupt cable columns
+            ImGui::TableSetupColumn("Object");
+            ImGui::TableSetupColumn("Values");
+            ImGui::TableHeadersRow();
+
+            // display all objects
+            for (Mesh& mesh : scene.get()) {
+
+                // push ID, get to the next row and select first column
+                ImGui::PushID(&mesh), ImGui::TableNextRow(), ImGui::TableSetColumnIndex(0);
+
+                // display the object tree
+                if (ImGui::TreeNode("Object", "%s_%u", mesh.getName().c_str(), (unsigned int)(uintptr_t)(&mesh))) {
+
+                    // extract all the properties
+                    glm::vec3 position = mesh.getPosition();
+
+                    // add row and select first column
+                    ImGui::TableNextRow(), ImGui::TableSetColumnIndex(0), ImGui::AlignTextToFramePadding();
+
+                    // print the property name
+                    ImGui::Text("Position");
+
+                    // select the second row and its width
+                    ImGui::TableSetColumnIndex(1), ImGui::PushItemWidth(200);
+
+                    // create the property slider
+                    if (ImGui::DragFloat3("", &position[0], 0.01f, -10.0f, 10.0f)) mesh.setPosition(position);
+
+                    // pop tree ID
+                    ImGui::TreePop();
+                }
+
+                // pop mesh id
+                ImGui::PopID();
+            }
+
+            // end the table
+            ImGui::EndTable();
+        }
+        // ImGui::PopStyleVar();
+
 
         // end the window
         ImGui::End();

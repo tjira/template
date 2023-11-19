@@ -18,11 +18,11 @@ struct Pointer {
         glm::mat4 view, proj;
     } camera{};
     struct Flags {
-        bool info = false, options = false;
+        bool info = false, objects = false, options = false;
     } flags{};
     struct Light {
         float ambient = 0.4f, diffuse = 0.2f, specular = 0.4f, shininess = 4.0f;
-        glm::vec3 position = {1.0f, 1.0f, 1.0f};
+        glm::vec3 position = {0.0f, 1.0f, -1.0f};
     } light{};
 };
 

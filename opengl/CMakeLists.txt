@@ -61,7 +61,7 @@ add_library(imgui ${IMBACKEND} ${IMDIALOG} ${IMGUI})
 target_link_libraries(imgui glad glfw)
 
 # add template-opengl executable
-add_executable(template-opengl src/buffer.cpp src/callback.cpp src/gui.cpp src/main.cpp src/mesh.cpp src/parser.cpp src/shader.cpp)
+add_executable(template-opengl src/buffer.cpp src/callback.cpp src/gui.cpp src/main.cpp src/mesh.cpp src/parser.cpp src/scene.cpp src/shader.cpp)
 target_link_libraries(template-opengl argparse imgui glm::glm)
 
 # link OpenMP on build type

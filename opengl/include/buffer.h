@@ -11,12 +11,9 @@ public:
     // empty constructor and destructor
     Buffer() : data(0) {generate();} ~Buffer();
 
-    // operators
-    Buffer& operator=(const Buffer& buffer);
-
     // getters
     std::vector<Vertex> getData() const {return data;}
-    size_t getSize() const {return data.size();};
+    size_t getSize() const {return data.size();}
 
     // state functions
     void bind() const {glBindVertexArray(vao);}

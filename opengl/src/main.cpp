@@ -15,34 +15,52 @@ layout(location = 2) in vec3 i_color;
 uniform mat4 u_model, u_view, u_proj;
 
 // output variables
-out vec3 fragment, normal, color; out mat3 transform;
+out vec3 fragment, normal, color;
 
 void main() {
+    // normal and fragment vectors
     normal = normalize(mat3(transpose(inverse(u_model))) * i_normal);
-    fragment = vec3(u_model * vec4(i_position, 1)), color = i_color;
+    fragment = vec3(u_model * vec4(i_position, 1.0));
+
+    // color vector
+    color = i_color;
+
+    // output vector
     gl_Position = u_proj * u_view * vec4(fragment, 1);
-    transform = inverse(mat3(u_view));
 })";
 
 std::string fragment = R"(
 #version 420 core
 
-// create the light struct
+// create the structures
 struct Light {vec3 position; float ambient, diffuse, specular, shininess;};
 
 // input variables
 uniform Light u_light; uniform vec3 u_camera;
 
 // passed variables
-in vec3 fragment, normal, color; in mat3 transform;
+in vec3 fragment, normal, color;
 
 // output variables
 out vec4 o_color;
 
 void main() {
-    vec3 lightPos = transform * u_light.position, reflection = reflect(-normalize(lightPos), normal), direction = normalize(u_camera - fragment);
-    vec3 specular = vec3(pow(max(dot(direction, reflection), 0), u_light.shininess)), diffuse = vec3(max(dot(normal, normalize(lightPos)), 0));
-    o_color = vec4((vec3(u_light.ambient) + u_light.diffuse * diffuse + u_light.specular * specular), 1) * vec4(color, 1);
+    // calculate the necessary vectors
+    vec3 dirLight = normalize(u_light.position - fragment);
+    vec3 dirCamera = normalize(u_camera - fragment);
+    vec3 dirReflect = reflect(-dirLight, normal);
+
+    // ambient light
+    vec3 ambient = u_light.ambient * color;
+
+    // direction of the light and diffuse lighting
+    vec3 diffuse = u_light.diffuse * max(dot(normal, dirLight), 0.0) * color;
+
+    // specular lighting
+    vec3 specular = u_light.specular * pow(max(dot(dirCamera, dirReflect), 0.0), u_light.shininess) * color; 
+
+    // output the resulting color
+    o_color = vec4(ambient + diffuse + specular, 1.0f);
 })";
 
 void set(const Shader& shader, const Pointer::Camera& camera, const Pointer::Light& light) {
@@ -99,15 +117,16 @@ int main(int argc, char** argv) {
 
     // initialize camera matrices
     pointer.camera.proj = glm::perspective(glm::radians(45.0f), (float)pointer.width / pointer.height, 0.01f, 1000.0f);
-    pointer.camera.view = glm::lookAt({0.0f, 0.0f, 5.0f}, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    pointer.camera.view = glm::lookAt({0.0f, 1.0f, 5.0f}, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
     {
-        // initialize meshes, shaders and GUIs
-        // auto mesh = Mesh::Icosphere(3, false); 
-        auto mesh = Mesh::Cube(); 
-
+        // initialize scene, shader and GUI
+        Scene scene; Gui gui(pointer.window);
         Shader shader(vertex, fragment);
-        Gui gui(pointer.window);
+
+        // add some meshes
+        scene.add(Mesh::Icosphere(4, true), {-1, 0, 0});
+        scene.add(Mesh::Cube(), {1, 0, 0});
 
         // enter the render loop
         while (!glfwWindowShouldClose(pointer.window)) {
@@ -119,13 +138,13 @@ int main(int argc, char** argv) {
             shader.use(), set(shader, pointer.camera, pointer.light);
 
             // render the mesh and GUI
-            mesh.render(shader), gui.render();
+            scene.render(shader), gui.render(scene);
             
             // swap buffers and poll events
             glfwSwapBuffers(pointer.window), glfwPollEvents();
         }
     }
 
-    // clean up generated meshes and terminate GLFW
+    // terminate GLFW
     glfwTerminate();
 }

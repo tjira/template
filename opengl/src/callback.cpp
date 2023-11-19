@@ -11,6 +11,7 @@ void keyCallback(GLFWwindow* window, int key, int, int action, int mods) {
 
         // function keys
         if (key == GLFW_KEY_F1) pointer->flags.options = !pointer->flags.options;
+        if (key == GLFW_KEY_F2) pointer->flags.objects = !pointer->flags.objects;
         if (key == GLFW_KEY_F12) pointer->flags.info = !pointer->flags.info;
     }
 }
