@@ -25,6 +25,7 @@ set(GLFW_BUILD_DOCS OFF)
 FetchContent_Declare(imdialog SYSTEM URL https://github.com/aiekick/ImGuiFileDialog/archive/refs/tags/v0.6.3.tar.gz)
 
 # git clone some libraries
+FetchContent_Declare(objloader SYSTEM GIT_REPOSITORY https://github.com/tinyobjloader/tinyobjloader.git GIT_TAG v2.0.0rc10)
 FetchContent_Declare(argparse SYSTEM GIT_REPOSITORY https://github.com/p-ranav/argparse.git GIT_TAG v2.9)
 FetchContent_Declare(imgui SYSTEM GIT_REPOSITORY https://github.com/ocornut/imgui.git GIT_TAG v1.88)
 FetchContent_Declare(glfw SYSTEM GIT_REPOSITORY https://github.com/glfw/glfw.git GIT_TAG 3.3.8)
@@ -33,10 +34,10 @@ FetchContent_Declare(glad GIT_REPOSITORY https://github.com/Dav1dde/glad.git GIT
 FetchContent_Declare(stb GIT_REPOSITORY https://github.com/nothings/stb.git)
 
 # fetch the dependencies
-FetchContent_MakeAvailable(argparse glad glfw glm imdialog imgui stb)
+FetchContent_MakeAvailable(argparse glad glfw glm imdialog imgui objloader stb)
 
 # include directories
-include_directories(include ${imdialog_SOURCE_DIR} ${imgui_SOURCE_DIR} ${stb_SOURCE_DIR})
+include_directories(include ${imdialog_SOURCE_DIR} ${imgui_SOURCE_DIR} ${objloader_SOURCE_DIR} ${stb_SOURCE_DIR})
 
 # generate glad library
 add_subdirectory(${glad_SOURCE_DIR}/cmake)
@@ -57,7 +58,7 @@ set(IMBACKEND ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp ${imgui_SOURCE_DI
 set(IMDIALOG ${imdialog_SOURCE_DIR}/ImGuiFileDialog.cpp)
 
 # add imgui library
-add_library(imgui ${IMBACKEND} ${IMDIALOG} ${IMGUI})
+add_library(imgui ${IMBACKEND} ${IMDIALOG} ${IMGUI} ${objloader_SOURCE_DIR}/tiny_obj_loader.cc)
 target_link_libraries(imgui glad glfw)
 
 # add template-opengl executable

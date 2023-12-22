@@ -1,5 +1,7 @@
 #include "mesh.h"
 
+#include "tiny_obj_loader.h"
+
 Mesh Mesh::Cube(const std::string& name) {
     // create the data vector
     std::vector<Vertex> data;
@@ -208,6 +210,58 @@ Mesh Mesh::Icosphere(int subdivisions, bool smooth, const std::string& name) {
     }
 
     // return the sphere
+    return Mesh(data, name);
+}
+
+Mesh Mesh::Load(const std::string& filename, const std::string& name) {
+    // check if the file exists
+    if (!std::filesystem::exists(filename)) {
+        std::cerr << std::string("File '") + filename + std::string("' does not exist.") << std::endl; return Mesh({});
+    }
+
+    // prepare the data structures
+    std::vector<Vertex> data;
+    glm::vec3 center(0.0f);
+
+    // initialize the reader
+    tinyobj::ObjReader reader;
+    if (!reader.ParseFromFile(filename)) {
+        if (!reader.Error().empty()) {
+            throw std::runtime_error(reader.Error());
+        }
+    }
+
+    // extract references stored in the mesh
+    auto& attrib = reader.GetAttrib();
+    auto& shapes = reader.GetShapes();
+
+    // format the data to my own structure
+    for (size_t i = 0; i < shapes.size(); i++) {
+        for (size_t j = 0, offset = 0; j < shapes[i].mesh.num_face_vertices.size(); j++) {
+            for (size_t v = 0; v < shapes[i].mesh.num_face_vertices[j]; v++) {
+                Vertex vertex; tinyobj::index_t k = shapes[i].mesh.indices[offset + v];
+                vertex.position.x = attrib.vertices[3 * k.vertex_index + 0];
+                vertex.position.y = attrib.vertices[3 * k.vertex_index + 1];
+                vertex.position.z = attrib.vertices[3 * k.vertex_index + 2];
+                if (k.normal_index >= 0) {
+                    vertex.normal.x = attrib.normals[3 * k.normal_index + 0];
+                    vertex.normal.y = attrib.normals[3 * k.normal_index + 1];
+                    vertex.normal.z = attrib.normals[3 * k.normal_index + 2];
+                }
+                center = center + vertex.position;
+                vertex.color = {1, 1, 1};
+                data.push_back(vertex);
+            }
+            offset += shapes[i].mesh.num_face_vertices[j];
+        }
+    }
+
+    // Center the mesh at the origin
+    for (Vertex& vertex : data) {
+        vertex.position = vertex.position - center / (float)data.size();
+    }
+
+    // Return the object
     return Mesh(data, name);
 }
 

@@ -8,8 +8,8 @@ public:
     // constructors
     Mesh(std::vector<Vertex> data, const std::string& name = "mesh") : name(name), model(1.0f), buffer(data) {}
     static Mesh Icosphere(int subdivisions, bool smooth, const std::string& name = "icosphere");
+    static Mesh Load(const std::string& path, const std::string& name = "obj");
     static Mesh Cube(const std::string& name = "cube");
-    // Mesh(const Mesh& mesh) {this->name = mesh.name, this->model = mesh.model, this->buffer = mesh.buffer; std::cout << "mesh assign" << std::endl;}
 
     // getters and setters
     std::string getName() const {return name;} glm::vec3 getPosition() const {return glm::vec3(model[3]);}

@@ -125,8 +125,8 @@ int main(int argc, char** argv) {
         Shader shader(vertex, fragment);
 
         // add some meshes
+        scene.add(Mesh::Load("example/torus.obj"), {1.5, 0, 0});
         scene.add(Mesh::Icosphere(4, true), {-1, 0, 0});
-        scene.add(Mesh::Cube(), {1, 0, 0});
 
         // enter the render loop
         while (!glfwWindowShouldClose(pointer.window)) {
