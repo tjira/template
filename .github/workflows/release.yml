@@ -42,7 +42,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install Packages
-        run: sudo apt install -y libgl1-mesa-dev libopenal-dev libudev-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev
+        run: sudo apt install -y libgl1-mesa-dev libopenal-dev libudev-dev libvorbis-dev libxcursor-dev libxrandr-dev
 
       - name: Configure
         run: cd sfml && cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} && cd ..
