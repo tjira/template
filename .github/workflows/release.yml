@@ -51,14 +51,34 @@ jobs:
         run: cd sfml && cmake --build build --parallel 2 && cd ..
 
       - name: Rename Executable
-        run: mv sfml/bin/template-sfml opengl/bin/template-sfml_linux_x86-64
+        run: mv sfml/bin/template-sfml sfml/bin/template-sfml_linux_x86-64
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          path: opengl/bin/template-sfml_linux_x86-64
+          path: sfml/bin/template-sfml_linux_x86-64
 
   build_opengl_windows_x86-64:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure
+        run: cd opengl && cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "Unix Makefiles" && cd ..
+
+      - name: Build
+        run: cd opengl && cmake --build build --parallel 2 && cd ..
+
+      - name: Rename Executable
+        run: mv opengl/bin/template-opengl.exe opengl/bin/template-opengl_windows_x86-64.exe
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: opengl/bin/template-opengl_windows_x86-64.exe
+
+  build_sfml_windows_x86-64:
     runs-on: windows-latest
 
     steps:
@@ -71,12 +91,12 @@ jobs:
         run: cd sfml && cmake --build build --parallel 2 && cd ..
 
       - name: Rename Executable
-        run: mv sfml/bin/template-sfml.exe opengl/bin/template-sfml_windows_x86-64.exe
+        run: mv sfml/bin/template-sfml.exe sfml/bin/template-sfml_windows_x86-64.exe
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          path: opengl/bin/template-sfml_windows_x86-64.exe
+          path: sfml/bin/template-sfml_windows_x86-64.exe
 
   release:
     runs-on: ubuntu-latest
