@@ -1,0 +1,92 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v**'
+
+permissions:
+  contents: write
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build_opengl_linux_x86-64:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Packages
+        run: sudo apt install -y libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev
+
+      - name: Configure
+        run: cd opengl && cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} && cd ..
+
+      - name: Build
+        run: cd opengl && cmake --build build --parallel 2 && cd ..
+
+      - name: Rename Executable
+        run: mv opengl/bin/template-opengl opengl/bin/template-opengl_linux_x86-64
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: opengl/bin/template-opengl_linux_x86-64
+
+  build_opengl_windows_x86-64:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Packages
+        run: pip install jinja2
+
+      - name: Configure
+        run: cd opengl && cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "Unix Makefiles" && cd ..
+
+      - name: Build
+        run: cd opengl && cmake --build build --parallel 2 && cd ..
+
+      - name: Rename Executable
+        run: mv opengl/bin/template-opengl.exe opengl/bin/template-opengl_windows_x86-64.exe
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: opengl/bin/template-opengl_windows_x86-64
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [build_linux_x86-64, build_windows_x86-64]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Copy x86-64 Binaries to the Root Folder
+        run: |
+          cp artifact/template-opengl_linux_x86-64 template-opengl && cp artifact/template-opengl_windows_x86-64.exe template-opengl.exe
+
+      - name: Create x86-64 Packages
+        run: |
+          zip -r template-opengl_windows_x86-64.zip template-opengl.exe LICENSE.md
+          tar -czf template-opengl_linux_x86-64.tar.gz template-opengl LICENSE.md
+
+      - name: Release linux_x86-64 Version (opengl)
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{secrets.GITHUB_TOKEN}}
+          file: template-opengl_linux_x86-64.tar.gz
+          tag: ${{github.ref}}
+
+      - name: Release windows_x86-64 Version (opengl)
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{secrets.GITHUB_TOKEN}}
+          file: template-opengl_windows_x86-64.zip
+          tag: ${{github.ref}}
