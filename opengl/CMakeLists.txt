@@ -18,8 +18,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "-s -mavx -O2")
 
 # static link on windows
 if (WIN32)
-    string(APPEND CMAKE_CXX_FLAGS_RELEASE " -static")
-    string(APPEND CMAKE_CXX_FLAGS_DEBUG " -static")
+    string(APPEND CMAKE_CXX_FLAGS_RELEASE " -mwindows -static")
+    string(APPEND CMAKE_CXX_FLAGS_DEBUG " -mwindows -static")
 endif()
 
 # set glfw cmake flags
