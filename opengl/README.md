@@ -1,1 +1,1 @@
-# Fractoid
+# OpenGL
