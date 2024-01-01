@@ -6,10 +6,10 @@
 class Mesh {
 public:
     // constructors
-    Mesh(std::vector<Vertex> data, const std::string& name = "mesh") : name(name), model(1.0f), buffer(data) {}
-    static Mesh Icosphere(int subdivisions, bool smooth, const std::string& name = "icosphere");
-    static Mesh Load(const std::string& path, const std::string& name = "obj");
-    static Mesh Cube(const std::string& name = "cube");
+    Mesh(std::vector<Vertex> data, const Material& mat = Material(), const std::string& name = "mesh") : material(mat), name(name), model(1.0f), buffer(data) {}
+    static Mesh Icosphere(int subdivisions, bool smooth = false, const Material& mat = Material(), const std::string& name = "icosphere");
+    static Mesh Load(const std::string& path, const Material& mat = Material(), const std::string& name = "obj");
+    static Mesh Cube(const Material& mat = Material(), const std::string& name = "cube");
 
     // getters and setters
     std::string getName() const {return name;} glm::vec3 getPosition() const {return glm::vec3(model[3]);}
@@ -21,7 +21,6 @@ public:
     void render(const Shader& shader, const glm::mat4& transform = glm::mat4(1.0f)) const;
 
 private:
-    std::string name;
-    glm::mat4 model;
-    Buffer buffer;
+    Material material; std::string name;
+    glm::mat4 model; Buffer buffer;
 };

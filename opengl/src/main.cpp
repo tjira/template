@@ -1,5 +1,4 @@
 #include "callback.h"
-#include "mesh.h"
 #include "parser.h"
 #include "gui.h"
 
@@ -33,10 +32,11 @@ std::string fragment = R"(
 #version 420 core
 
 // create the structures
-struct Light {vec3 position; float ambient, diffuse, specular, shininess;};
+struct Material {vec3 ambient, diffuse, specular; float shininess;};
+struct Light {vec3 position, ambient, diffuse, specular;};
 
 // input variables
-uniform Light u_light; uniform vec3 u_camera;
+uniform Light u_light; uniform Material u_mat; uniform vec3 u_camera;
 
 // passed variables
 in vec3 fragment, normal, color;
@@ -51,27 +51,33 @@ void main() {
     vec3 dirReflect = reflect(-dirLight, normal);
 
     // ambient light
-    vec3 ambient = u_light.ambient * color;
+    vec3 ambient = u_light.ambient * u_mat.ambient * color;
 
     // direction of the light and diffuse lighting
-    vec3 diffuse = u_light.diffuse * max(dot(normal, dirLight), 0.0) * color;
+    vec3 diffuse = u_light.diffuse * u_mat.diffuse * max(dot(normal, dirLight), 0.0) * color;
 
     // specular lighting
-    vec3 specular = u_light.specular * pow(max(dot(dirCamera, dirReflect), 0.0), u_light.shininess) * color; 
+    vec3 specular = u_light.specular * u_mat.specular * pow(max(dot(dirCamera, dirReflect), 0.0), u_mat.shininess) * color; 
 
     // output the resulting color
     o_color = vec4(ambient + diffuse + specular, 1.0f);
 })";
 
 void set(const Shader& shader, const Pointer::Camera& camera, const Pointer::Light& light) {
+    // set the camera position
     shader.set<glm::vec3>("u_camera", -glm::inverse(glm::mat3(camera.view)) * glm::vec3(camera.view[3]));
+
+    // set the view and projection matrices
     shader.set<glm::mat4>("u_view", camera.view);
     shader.set<glm::mat4>("u_proj", camera.proj);
+
+    // set the light position
     shader.set<glm::vec3>("u_light.position", light.position);
-    shader.set<float>("u_light.shininess", light.shininess);
-    shader.set<float>("u_light.specular", light.specular);
-    shader.set<float>("u_light.ambient", light.ambient);
-    shader.set<float>("u_light.diffuse", light.diffuse);
+
+    // set the light properties
+    shader.set<glm::vec3>("u_light.specular", light.specular);
+    shader.set<glm::vec3>("u_light.ambient", light.ambient);
+    shader.set<glm::vec3>("u_light.diffuse", light.diffuse);
 }
 
 int main(int argc, char** argv) {
@@ -80,7 +86,7 @@ int main(int argc, char** argv) {
 
     // Initialize GLFW and throw error if failed
     if(!glfwInit()) {
-        throw std::runtime_error("Error during GLFW initialization.");
+        throw std::runtime_error("GLFW INITIALIZATION FAILED");
     }
 
     // declare GLFW pointer
@@ -94,12 +100,12 @@ int main(int argc, char** argv) {
 
     // create the window
     if (pointer.window = glfwCreateWindow(pointer.width, pointer.height, pointer.title, nullptr, nullptr); !pointer.window) {
-        throw std::runtime_error("Error during window creation.");
+        throw std::runtime_error("WINDOW CREATION FAILED");
     }
 
     // Initialize GLAD
     if (glfwMakeContextCurrent(pointer.window); !gladLoadGL(glfwGetProcAddress)) {
-        throw std::runtime_error("Error during GLAD initialization.");
+        throw std::runtime_error("GLAD INITIALIZATION FAILED");
     }
 
     // assign pointer and enable depth test and culling
@@ -124,13 +130,12 @@ int main(int argc, char** argv) {
         Scene scene; Gui gui(pointer.window);
         Shader shader(vertex, fragment);
 
-        // add some meshes
-        scene.add(Mesh::Icosphere(4, false), { 1, 0, 0});
-        scene.add(Mesh::Icosphere(4, false), {-1, 0, 0});
+        // add light meshes
+        scene.add(Mesh::Icosphere(4, false, Material(), "sun"), pointer.light.position);
+        scene.add(Mesh::Icosphere(4, false, Material()), {0, 0, 0});
 
         // enter the render loop
         while (!glfwWindowShouldClose(pointer.window)) {
-
             // clear the color and depth buffer
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

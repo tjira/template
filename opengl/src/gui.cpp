@@ -33,15 +33,13 @@ void Gui::render(Scene& scene) {
 
     // options window
     if (pointer->flags.options) {
-
         // begin the window
         ImGui::Begin("Options", &pointer->flags.options, ImGuiWindowFlags_AlwaysAutoResize);
         
         // lighting options
-        ImGui::SliderFloat("Ambient", &pointer->light.ambient, 0, 1);
-        ImGui::SliderFloat("Diffuse", &pointer->light.diffuse, 0, 1);
-        ImGui::SliderFloat("Specular", &pointer->light.specular, 0, 1);
-        ImGui::SliderFloat("Shininess", &pointer->light.shininess, 1, 128);
+        ImGui::DragFloat3("Ambient", &pointer->light.ambient[0], 0.01f, 0.0f, 1.0f);
+        ImGui::DragFloat3("Diffuse", &pointer->light.diffuse[0], 0.01f, 0.0f, 1.0f);
+        ImGui::DragFloat3("Specular", &pointer->light.specular[0], 0.01f, 0.0f, 1.0f);
 
         // end the window
         ImGui::End();
@@ -49,13 +47,11 @@ void Gui::render(Scene& scene) {
 
     // objects window
     if (pointer->flags.objects) {
-
         // begin the window
-        ImGui::Begin("Objects", &pointer->flags.options, ImGuiWindowFlags_AlwaysAutoResize);
+        ImGui::Begin("Objects", &pointer->flags.objects, ImGuiWindowFlags_AlwaysAutoResize);
 
         // begin the table
         if (ImGui::BeginTable("##split", 2, ImGuiTableFlags_BordersOuter | ImGuiTableFlags_ScrollY)) {
-
             // setupt cable columns
             ImGui::TableSetupColumn("Object");
             ImGui::TableSetupColumn("Values");
@@ -63,7 +59,6 @@ void Gui::render(Scene& scene) {
 
             // display all objects
             for (Mesh& mesh : scene.get()) {
-
                 // push ID, get to the next row and select first column
                 ImGui::PushID(&mesh), ImGui::TableNextRow(), ImGui::TableSetColumnIndex(0);
 
@@ -96,8 +91,6 @@ void Gui::render(Scene& scene) {
             // end the table
             ImGui::EndTable();
         }
-        // ImGui::PopStyleVar();
-
 
         // end the window
         ImGui::End();
@@ -105,7 +98,6 @@ void Gui::render(Scene& scene) {
 
     // info window
     if (pointer->flags.info) {
-
         // begin the window
         ImGui::SetNextWindowPos({ 0, 0 }); ImGui::Begin("info", &pointer->flags.info,
             ImGuiWindowFlags_NoTitleBar |
@@ -122,9 +114,20 @@ void Gui::render(Scene& scene) {
         ImGui::End();
     }
 
-    // if saving the molecule open the window
-    if (ImGuiFileDialog::Instance()->Display("Save Screenshot", ImGuiWindowFlags_NoCollapse, {512, 288})) {
+    // if opening obj file open the window
+    if (ImGuiFileDialog::Instance()->Display("Open Model", ImGuiWindowFlags_NoCollapse, {512, 288})) {
+        // if the image save is confirmed
+        if (ImGuiFileDialog::Instance()->IsOk()) {
+            // add model to the scene
+            scene.add(Mesh::Load(ImGuiFileDialog::Instance()->GetFilePathName()), {0, 0, 0});
+        }
 
+        // close the instance
+        ImGuiFileDialog::Instance()->Close();
+    }
+
+    // if saving the screenshot open the window
+    if (ImGuiFileDialog::Instance()->Display("Save Screenshot", ImGuiWindowFlags_NoCollapse, {512, 288})) {
         // get the with and height of the viewport and create pixel array
         GLint viewport[4]; glGetIntegerv(GL_VIEWPORT, viewport);
         int width = viewport[2], height = viewport[3];
@@ -135,7 +138,6 @@ void Gui::render(Scene& scene) {
 
         // if the image save is confirmed
         if (ImGuiFileDialog::Instance()->IsOk()) {
-
             // get the path and extension
             std::string path = ImGuiFileDialog::Instance()->GetFilePathName();
             std::string extension = path.substr(path.find_last_of(".") + 1);

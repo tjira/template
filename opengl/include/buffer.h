@@ -1,6 +1,6 @@
 #pragma once
 
-#include "opengl.h"
+#include "material.h"
 
 class Buffer {
 public:

@@ -21,7 +21,7 @@ struct Pointer {
         bool info = false, objects = false, options = false;
     } flags{};
     struct Light {
-        float ambient = 0.4f, diffuse = 0.2f, specular = 0.4f, shininess = 4.0f;
+        glm::vec3 ambient = {0.4f, 0.4f, 0.4f}, diffuse = {0.2f, 0.2f, 0.2f}, specular = {0.4f, 0.4f, 0.4f};
         glm::vec3 position = {4.0f, 5.0f, -2.0f};
     } light{};
 };

@@ -7,6 +7,8 @@ void keyCallback(GLFWwindow* window, int key, int, int action, int mods) {
         // save the image with CTRL+S combination
         if (mods == GLFW_MOD_CONTROL && key == GLFW_KEY_S) {
             ImGuiFileDialog::Instance()->OpenDialog("Save Screenshot", "Save Screenshot", "Image Files{.png,.jpg,.bmp},All Files{.*}", "");
+        } else if (mods == GLFW_MOD_CONTROL && key == GLFW_KEY_O) {
+            ImGuiFileDialog::Instance()->OpenDialog("Open Model", "Open Model", "Model Files{.obj},All Files{.*}", "");
         }
 
         // function keys

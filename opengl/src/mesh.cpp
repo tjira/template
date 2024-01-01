@@ -2,7 +2,7 @@
 
 #include "tiny_obj_loader.h"
 
-Mesh Mesh::Cube(const std::string& name) {
+Mesh Mesh::Cube(const Material& mat, const std::string& name) {
     // create the data vector
     std::vector<Vertex> data;
 
@@ -45,10 +45,10 @@ Mesh Mesh::Cube(const std::string& name) {
     data.push_back({glm::normalize(glm::vec3{-0.5f,  0.5f, -0.5f}), glm::vec3{ 0.0f,  1.0f,  0.0f}});
 
     // return the mesh
-    return Mesh(data, name);
+    return Mesh(data, mat, name);
 }
 
-Mesh Mesh::Icosphere(int subdivisions, bool smooth, const std::string& name) {
+Mesh Mesh::Icosphere(int subdivisions, bool smooth, const Material& mat, const std::string& name) {
     // create the data vector and the icosphere constant
     std::vector<Vertex> data; float k = (1.0f + sqrtf(5.0f)) / 2.0f;
 
@@ -198,7 +198,6 @@ Mesh Mesh::Icosphere(int subdivisions, bool smooth, const std::string& name) {
 
     // assign normals
     for (size_t i = 0; i < data.size(); i += 3) {
-
         // get two vectors from the same plane
         glm::vec3 v1 = data.at(i + 1).position - data.at(i).position;
         glm::vec3 v2 = data.at(i + 2).position - data.at(i).position;
@@ -210,10 +209,10 @@ Mesh Mesh::Icosphere(int subdivisions, bool smooth, const std::string& name) {
     }
 
     // return the sphere
-    return Mesh(data, name);
+    return Mesh(data, mat, name);
 }
 
-Mesh Mesh::Load(const std::string& filename, const std::string& name) {
+Mesh Mesh::Load(const std::string& filename, const Material& mat, const std::string& name) {
     // check if the file exists
     if (!std::filesystem::exists(filename)) {
         std::cerr << std::string("File '") + filename + std::string("' does not exist.") << std::endl; return Mesh({});
@@ -262,12 +261,16 @@ Mesh Mesh::Load(const std::string& filename, const std::string& name) {
     }
 
     // Return the object
-    return Mesh(data, name);
+    return Mesh(data, mat, name);
 }
 
 void Mesh::render(const Shader& shader, const glm::mat4& transform) const {
     // use the shader and set the model matrix
     shader.use(), shader.set<glm::mat4>("u_model", transform * model);
+
+    // set material
+    shader.set<glm::vec3>("u_mat.specular", material.getSpecular()); shader.set<float>("u_mat.shininess", material.getShininess());
+    shader.set<glm::vec3>("u_mat.ambient", material.getAmbient()); shader.set<glm::vec3>("u_mat.diffuse", material.getDiffuse());
 
     // bind the buffer and draw the vertices
     buffer.bind(), glDrawArrays(GL_TRIANGLES, 0, (int)buffer.getSize());

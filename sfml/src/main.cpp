@@ -2,7 +2,7 @@
 
 int main(int argc, char** argv) {
     // create the window
-    sf::RenderWindow window(sf::VideoMode(1280, 720), "template-sfml");
+    sf::RenderWindow window(sf::VideoMode(1280, 720), "SFML Template");
 
     // enable VSync
     window.setVerticalSyncEnabled(true);
