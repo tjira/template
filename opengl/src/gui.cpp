@@ -131,10 +131,12 @@ void Gui::render(Scene& scene) {
         // get the with and height of the viewport and create pixel array
         GLint viewport[4]; glGetIntegerv(GL_VIEWPORT, viewport);
         int width = viewport[2], height = viewport[3];
-        unsigned char pixels[4 * width * height];
+
+        // create the vector of pixels
+        std::vector<unsigned char> pixels(4 * width * height);
 
         // read the buffer
-        glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+        glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
 
         // if the image save is confirmed
         if (ImGuiFileDialog::Instance()->IsOk()) {
@@ -145,14 +147,14 @@ void Gui::render(Scene& scene) {
             // flip the image
             for (int i = 0; i < 4 * width; i++) {
                 for (int j = 0; j < height / 2; j++) {
-                    std::swap(pixels[4 * j * width + i], pixels[4 * (height - j - 1) * width + i]);
+                    std::swap(pixels.at(4 * j * width + i), pixels.at(4 * (height - j - 1) * width + i));
                 }
             }
 
             // save the buffer
-            if (extension == "png") stbi_write_png(path.c_str(), width, height, 4, pixels, 4 * width);
-            else if (extension == "jpg") stbi_write_jpg(path.c_str(), width, height, 4, pixels, 80);
-            else if (extension == "bmp") stbi_write_bmp(path.c_str(), width, height, 4, pixels);
+            if (extension == "png") stbi_write_png(path.c_str(), width, height, 4, pixels.data(), 4 * width);
+            else if (extension == "jpg") stbi_write_jpg(path.c_str(), width, height, 4, pixels.data(), 80);
+            else if (extension == "bmp") stbi_write_bmp(path.c_str(), width, height, 4, pixels.data());
             else throw std::runtime_error("Unknown file extension.");
         }
 
