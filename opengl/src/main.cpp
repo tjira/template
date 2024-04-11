@@ -130,9 +130,8 @@ int main(int argc, char** argv) {
         Scene scene; Gui gui(pointer.window);
         Shader shader(vertex, fragment);
 
-        // add light meshes
-        scene.add(Mesh::Icosphere(4, false, Material(), "sun"), pointer.light.position);
-        scene.add(Mesh::Icosphere(4, false, Material()), {0, 0, 0});
+        // load the object file
+        if (parser.has("-f")) scene.add(Mesh::Load(parser.get<std::string>("-f")));
 
         // enter the render loop
         while (!glfwWindowShouldClose(pointer.window)) {

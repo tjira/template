@@ -2,7 +2,8 @@
 
 Parser::Parser(int argc, char** argv) : program("template-opengl", "1.0", argparse::default_arguments::none) {
     // add options to the parser
-    program.add_argument("-h").help("Display this help message and exit.").default_value(false).implicit_value(true);
+    program.add_argument("-h").help("-- This help message.").default_value(false).implicit_value(true);
+    program.add_argument("-f").help("-- Object file to display.");
 
     // extract the variables from the command line
     try {
